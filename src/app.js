@@ -11,6 +11,7 @@ exports.handler = async (event, context) => {
   console.info("EVENT\n" + JSON.stringify(event, null, 2))
   let browser = null
   let pdf = null
+  let screenshot = null
 
   try {
     browser = await chromium.puppeteer.launch({
@@ -34,16 +35,37 @@ exports.handler = async (event, context) => {
       deviceScaleFactor: 1,
       isLandscape: true,
     })
-    pdf = await page.pdf({
-      format: 'a4',
-      margin: {
-        top: '0px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
+    //pdf = await page.pdf({
+    //  format: 'a4',
+    //  margin: {
+    //    top: '0px',
+    //    right: '0px',
+    //    bottom: '0px',
+    //    left: '0px',
+    //  },
+    //})
+    imageBuffer = await page.screenshot({
+      type: 'jpeg',
+      quality: 100,
+      clip: {
+        x: 0,
+        y: 0,
+        width: 640,
+        height: 360,
       },
+      omitBackground: true,
+      //encoding: 'base64',
+      //type: 'png',
+      //fullPage: true
+      //clip: {
+      //  x,
+      //  y,
+      //  height,
+      //  width
+      //}
     })
     console.log('Done writing PDF.')
+    console.log(imageBuffer.toString('base64'))
 
     console.log('Shutting down Chrome...')
     await page.close()
@@ -61,12 +83,12 @@ exports.handler = async (event, context) => {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST',
-      'Content-type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename="foo.pdf"',
+      'Content-type': 'image/jpeg',//'application/pdf',
+      //'Content-Disposition': 'attachment; filename="picture.jpeg"',
     },
     isBase64Encoded: true,
-    body: pdf.toString('base64'),
+    body: imageBuffer.toString('base64')//pdf.toString('base64'),
   }
 
-  return response
+  return response;
 }
