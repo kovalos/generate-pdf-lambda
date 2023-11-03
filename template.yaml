@@ -42,7 +42,7 @@ Resources:
           Type: Api
           Properties:
             Path: /pdf
-            Method: post
+            Method: get
             RestApiId:
               Ref: ApiGatewayApi
 Outputs:

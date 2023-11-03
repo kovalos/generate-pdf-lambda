@@ -3,6 +3,7 @@
  */
 
 const chromium = require('chrome-aws-lambda')
+const fs = require('fs');
 
 const agent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
@@ -27,42 +28,24 @@ exports.handler = async (event, context) => {
     let page = await browser.newPage()
     await page.setUserAgent(agent)
 
+    const html = fs.readFileSync('chart.html', 'utf8')
+      .replace('${persentScheduled}', event.queryStringParameters.persentScheduled)
+      .replace('${persentReview}', event.queryStringParameters.persentReview)
     console.log('Sending HTML content to browser:')
-    await page.setContent(event.body)
+    await page.setContent(html)
     await page.setViewport({
-      width: 1080,
+      width: 500,
       height: 1600,
       deviceScaleFactor: 1,
       isLandscape: true,
     })
-    //pdf = await page.pdf({
-    //  format: 'a4',
-    //  margin: {
-    //    top: '0px',
-    //    right: '0px',
-    //    bottom: '0px',
-    //    left: '0px',
-    //  },
-    //})
-    imageBuffer = await page.screenshot({
+    const selector = '#chartContainer';
+    await page.waitForSelector(selector);
+    const element = await page.$(selector);
+    imageBuffer = await element.screenshot({
       type: 'jpeg',
       quality: 100,
-      clip: {
-        x: 0,
-        y: 0,
-        width: 640,
-        height: 360,
-      },
-      omitBackground: true,
-      //encoding: 'base64',
-      //type: 'png',
-      //fullPage: true
-      //clip: {
-      //  x,
-      //  y,
-      //  height,
-      //  width
-      //}
+      omitBackground: true
     })
     console.log('Done writing PDF.')
     console.log(imageBuffer.toString('base64'))
