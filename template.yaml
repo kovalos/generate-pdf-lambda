@@ -28,12 +28,13 @@ Resources:
     Properties:
       CodeUri: src/
       Handler: app.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs18.x
       Timeout: 15
       MemorySize: 3008
 
       Layers:
-        - !Sub 'arn:aws:lambda:${AWS::Region}:764866452798:layer:chrome-aws-lambda:22'
+        - !Sub 'arn:aws:lambda:us-east-1:764866452798:layer:chrome-aws-lambda:22'
+        - !Sub 'arn:aws:lambda:us-east-1:923560778095:layer:chromium:1'
       Environment:
         Variables:
           EXAMPLE_ENV: 'CHANGE_THIS'

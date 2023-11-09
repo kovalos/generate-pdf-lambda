@@ -39,10 +39,10 @@ sam-build: ## Build the SAM template
 	sam build
 
 invokation-local: sam-build ## Invoke Lambda locally
-	sam local invoke "PdfFunction" -e events/api-gw-event.json --region us-west-1
+	sam local invoke "PdfFunction" -e events/api-gw-event.json --region us-east-1
 
 api-local: sam-build ## Start Local API Gateway
-	sam local start-api --region us-west-1
+	sam local start-api --region us-east-1 --profile LambdaDeveloper-923560778095
 
 deploy: sam-build ## Deploy SAM template
 	sam deploy 
